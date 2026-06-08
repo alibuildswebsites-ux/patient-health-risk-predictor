@@ -23,14 +23,16 @@ export default function App() {
 
   return (
     <div className="relative min-h-[100dvh] w-full bg-[#0a0a0a] text-white flex flex-col pt-14 overflow-x-hidden">
-      {/* Background: subtle grid */}
+      {/* Background: perspective grid */}
       <div className="bg-grid pointer-events-none fixed inset-0 z-0" />
-      {/* Background: soft radial glow */}
+      {/* Background: central glow blob */}
       <motion.div
         className="bg-blob pointer-events-none fixed inset-0 z-0"
-        animate={{ opacity: [0.6, 1, 0.6] }}
-        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+        animate={{ opacity: [0.7, 1, 0.7] }}
+        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
       />
+      {/* Background: corner vignette for depth */}
+      <div className="bg-vignette pointer-events-none fixed inset-0 z-0" />
 
       <Navbar activeTab={activeTab} setActiveTab={setActiveTab} />
 

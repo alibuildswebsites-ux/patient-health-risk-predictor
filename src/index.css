@@ -174,17 +174,29 @@ body {
 .recharts-cartesian-axis-tick-value { fill: #525252 !important; font-family: var(--font-mono); }
 .recharts-legend-item-text { color: #a1a1a1 !important; font-size: 0.75rem !important; }
 
-/* ── Background texture ───────────────────────────────────────────────────── */
+/* ── Background: perspective grid ────────────────────────────────────────── */
 .bg-grid {
   background-image:
-    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-  background-size: 40px 40px;
+    linear-gradient(rgba(255,255,255,0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px);
+  background-size: 48px 48px;
+  /* perspective vanishing-point: fade lines out toward edges */
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 50%, black 30%, transparent 100%);
 }
 
 /* ── Animated gradient blob ───────────────────────────────────────────────── */
 .bg-blob {
-  background: radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.03), transparent 65%);
+  background:
+    /* bright central glow */
+    radial-gradient(ellipse 55% 40% at 50% 38%, rgba(255,255,255,0.07) 0%, transparent 70%),
+    /* mid ring */
+    radial-gradient(ellipse 90% 60% at 50% 45%, rgba(255,255,255,0.025) 0%, transparent 75%);
+}
+
+/* ── Vignette — darkens corners for depth ────────────────────────────────── */
+.bg-vignette {
+  background: radial-gradient(ellipse 100% 100% at 50% 50%, transparent 40%, rgba(0,0,0,0.75) 100%);
 }
 
 /* ── Reduced motion ───────────────────────────────────────────────────────── */
