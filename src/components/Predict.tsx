@@ -1,158 +1,128 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Activity, ShieldAlert, CheckCircle2, Loader2 } from 'lucide-react';
-import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell } from 'recharts';
+import { Activity, ShieldAlert, CheckCircle2, Loader2, ChevronDown } from 'lucide-react';
+import {
+  BarChart as RechartsBarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+  Cell,
+  Tooltip,
+} from 'recharts';
 import { Patient } from '../data/mockData';
 
 interface PredictProps {
   onPredict: (newPatient: Patient) => void;
 }
 
-// ── Field option types ────────────────────────────────────────────────────────
+// ── Field definitions ──────────────────────────────────────────────────────────
 
-interface FieldOption {
-  label: string;   // shown in the dropdown
-  value: number;   // numeric value sent to the backend
-}
-
+interface FieldOption { label: string; value: number; }
 interface SelectField {
-  kind: 'select';
   key: string;
   label: string;
   subtitle?: string;
-  options: FieldOption[];  // first = Good, last = Bad
+  options: FieldOption[];
   min?: number;
   max?: number;
+  step?: number;
 }
 
-// All 13 backend fields exposed as structured dropdowns.
-// "Custom" option is appended automatically at render time.
 const FIELDS: SelectField[] = [
   {
-    kind: 'select',
-    key: 'age',
-    label: 'Age',
+    key: 'age', label: 'Age',
     options: [
-      { label: '29 — Young Adult', value: 29 },
+      { label: '29 — Young Adult',  value: 29 },
       { label: '45 — Middle-aged',  value: 45 },
       { label: '55 — Senior',       value: 55 },
       { label: '71 — Elderly',      value: 71 },
-    ],
-    min: 1, max: 120,
+    ], min: 1, max: 120,
   },
   {
-    kind: 'select',
-    key: 'sex',
-    label: 'Sex',
+    key: 'sex', label: 'Sex',
     options: [
       { label: 'Female', value: 0 },
       { label: 'Male',   value: 1 },
     ],
   },
   {
-    kind: 'select',
-    key: 'cp',
-    label: 'Chest Pain Type',
+    key: 'cp', label: 'Chest Pain Type',
     options: [
-      { label: 'Typical Angina',    value: 1 },
-      { label: 'Atypical Angina',   value: 2 },
-      { label: 'Non-Anginal Pain',  value: 3 },
-      { label: 'Asymptomatic',      value: 0 },
+      { label: 'Typical Angina',   value: 1 },
+      { label: 'Atypical Angina',  value: 2 },
+      { label: 'Non-Anginal Pain', value: 3 },
+      { label: 'Asymptomatic',     value: 0 },
     ],
   },
   {
-    kind: 'select',
-    key: 'trestbps',
-    label: 'Resting Blood Pressure (mmHg)',
+    key: 'trestbps', label: 'Resting Blood Pressure', subtitle: 'mmHg',
     options: [
       { label: '110 — Normal',    value: 110 },
       { label: '130 — Elevated',  value: 130 },
       { label: '150 — High',      value: 150 },
       { label: '180 — Very High', value: 180 },
-    ],
-    min: 80, max: 220,
+    ], min: 80, max: 220,
   },
   {
-    kind: 'select',
-    key: 'chol',
-    label: 'Serum Cholesterol (mg/dl)',
+    key: 'chol', label: 'Serum Cholesterol', subtitle: 'mg/dl',
     options: [
       { label: '180 — Normal',     value: 180 },
       { label: '220 — Borderline', value: 220 },
       { label: '260 — High',       value: 260 },
       { label: '320 — Very High',  value: 320 },
-    ],
-    min: 100, max: 600,
+    ], min: 100, max: 600,
   },
   {
-    kind: 'select',
-    key: 'fbs',
-    label: 'Fasting Blood Sugar',
-    subtitle: '> 120 mg/dl',
+    key: 'fbs', label: 'Fasting Blood Sugar', subtitle: '> 120 mg/dl',
     options: [
-      { label: 'No — Normal (≤120 mg/dl)',   value: 0 },
-      { label: 'Yes — Elevated (>120 mg/dl)', value: 1 },
+      { label: 'No — Normal',   value: 0 },
+      { label: 'Yes — Elevated', value: 1 },
     ],
   },
   {
-    kind: 'select',
-    key: 'restecg',
-    label: 'Resting ECG Results',
+    key: 'restecg', label: 'Resting ECG Results',
     options: [
-      { label: 'Normal',                    value: 0 },
-      { label: 'ST-T Wave Abnormality',     value: 1 },
-      { label: 'Left Ventricular Hypertrophy', value: 2 },
+      { label: 'Normal',                       value: 0 },
+      { label: 'ST-T Wave Abnormality',        value: 1 },
+      { label: 'LV Hypertrophy',               value: 2 },
     ],
   },
   {
-    kind: 'select',
-    key: 'thalach',
-    label: 'Max Heart Rate Achieved',
+    key: 'thalach', label: 'Max Heart Rate', subtitle: 'bpm',
     options: [
-      { label: '175 bpm — High Capacity',  value: 175 },
-      { label: '150 bpm — Moderate',       value: 150 },
-      { label: '130 bpm — Below Average',  value: 130 },
-      { label: '100 bpm — Low',            value: 100 },
-    ],
-    min: 50, max: 250,
+      { label: '175 — High Capacity',  value: 175 },
+      { label: '150 — Moderate',       value: 150 },
+      { label: '130 — Below Average',  value: 130 },
+      { label: '100 — Low',            value: 100 },
+    ], min: 50, max: 250,
   },
   {
-    kind: 'select',
-    key: 'exang',
-    label: 'Exercise Induced Angina',
-    subtitle: 'Chest pain upon exertion',
+    key: 'exang', label: 'Exercise Angina', subtitle: 'chest pain on exertion',
     options: [
       { label: 'No',  value: 0 },
       { label: 'Yes', value: 1 },
     ],
   },
   {
-    kind: 'select',
-    key: 'oldpeak',
-    label: 'ST Depression (Oldpeak)',
-    subtitle: 'Induced by exercise vs rest',
+    key: 'oldpeak', label: 'ST Depression', subtitle: 'oldpeak',
     options: [
       { label: '0.0 — None',     value: 0.0 },
       { label: '1.0 — Mild',     value: 1.0 },
       { label: '2.5 — Moderate', value: 2.5 },
       { label: '4.5 — Severe',   value: 4.5 },
-    ],
-    min: 0, max: 10,
+    ], min: 0, max: 10, step: 0.1,
   },
   {
-    kind: 'select',
-    key: 'slope',
-    label: 'ST Segment Slope',
+    key: 'slope', label: 'ST Segment Slope',
     options: [
-      { label: 'Upsloping — Healthy',    value: 0 },
-      { label: 'Flat — Borderline',       value: 1 },
-      { label: 'Downsloping — Abnormal',  value: 2 },
+      { label: 'Upsloping — Healthy',   value: 0 },
+      { label: 'Flat — Borderline',     value: 1 },
+      { label: 'Downsloping — Abnormal', value: 2 },
     ],
   },
   {
-    kind: 'select',
-    key: 'ca',
-    label: 'Major Vessels Colored (Fluoroscopy)',
+    key: 'ca', label: 'Major Vessels', subtitle: 'fluoroscopy colored',
     options: [
       { label: '0 — None',  value: 0 },
       { label: '1 Vessel',  value: 1 },
@@ -161,55 +131,64 @@ const FIELDS: SelectField[] = [
     ],
   },
   {
-    kind: 'select',
-    key: 'thal',
-    label: 'Thalassemia',
+    key: 'thal', label: 'Thalassemia',
     options: [
-      { label: 'Normal',              value: 1 },
-      { label: 'Fixed Defect',        value: 2 },
-      { label: 'Reversible Defect',   value: 3 },
+      { label: 'Normal',            value: 1 },
+      { label: 'Fixed Defect',      value: 2 },
+      { label: 'Reversible Defect', value: 3 },
     ],
   },
 ];
 
-// ── Initial state ─────────────────────────────────────────────────────────────
+// ── State helpers ──────────────────────────────────────────────────────────────
 
-type FormValues = Record<string, number>;
+type FormValues  = Record<string, number>;
 type CustomFlags = Record<string, boolean>;
 type CustomInputs = Record<string, string>;
 
 function buildInitialValues(): FormValues {
-  const vals: FormValues = {};
-  for (const f of FIELDS) vals[f.key] = f.options[0].value;
-  return vals;
+  const v: FormValues = {};
+  for (const f of FIELDS) v[f.key] = f.options[0].value;
+  return v;
 }
 
-// ── Component ─────────────────────────────────────────────────────────────────
+// ── Custom tooltip for confidence chart ────────────────────────────────────────
+
+const ConfidenceTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="bg-[#111111] border border-[#222222] rounded-lg px-3 py-2 shadow-xl">
+      <p className="text-[10px] text-[#737373] uppercase tracking-wider mb-0.5">{label}</p>
+      <p className="text-sm font-semibold text-white font-mono">{payload[0].value}%</p>
+    </div>
+  );
+};
+
+// ── Component ──────────────────────────────────────────────────────────────────
 
 export const Predict: React.FC<PredictProps> = ({ onPredict }) => {
-  const [values, setValues] = useState<FormValues>(buildInitialValues);
-  const [customFlags, setCustomFlags] = useState<CustomFlags>({});
+  const [values,       setValues]       = useState<FormValues>(buildInitialValues);
+  const [customFlags,  setCustomFlags]  = useState<CustomFlags>({});
   const [customInputs, setCustomInputs] = useState<CustomInputs>({});
+  const [result,       setResult]       = useState<Patient | null>(null);
+  const [loading,      setLoading]      = useState(false);
+  const [error,        setError]        = useState<string | null>(null);
 
-  const [result, setResult] = useState<Patient | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // ── Handlers ────────────────────────────────────────────────────────────────
+  // ── Handlers ──────────────────────────────────────────────────────────────
 
   const handleDropdownChange = (key: string, raw: string) => {
     if (raw === '__custom__') {
-      setCustomFlags(prev => ({ ...prev, [key]: true }));
+      setCustomFlags(p => ({ ...p, [key]: true }));
     } else {
-      setCustomFlags(prev => ({ ...prev, [key]: false }));
-      setValues(prev => ({ ...prev, [key]: Number(raw) }));
+      setCustomFlags(p => ({ ...p, [key]: false }));
+      setValues(p => ({ ...p, [key]: Number(raw) }));
     }
   };
 
   const handleCustomInput = (key: string, raw: string) => {
-    setCustomInputs(prev => ({ ...prev, [key]: raw }));
-    const parsed = parseFloat(raw);
-    if (!isNaN(parsed)) setValues(prev => ({ ...prev, [key]: parsed }));
+    setCustomInputs(p => ({ ...p, [key]: raw }));
+    const n = parseFloat(raw);
+    if (!isNaN(n)) setValues(p => ({ ...p, [key]: n }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -218,19 +197,10 @@ export const Predict: React.FC<PredictProps> = ({ onPredict }) => {
     setError(null);
 
     const payload = {
-      age:      values['age'],
-      sex:      values['sex'],
-      cp:       values['cp'],
-      trestbps: values['trestbps'],
-      chol:     values['chol'],
-      fbs:      values['fbs'],
-      restecg:  values['restecg'],
-      thalach:  values['thalach'],
-      exang:    values['exang'],
-      oldpeak:  values['oldpeak'],
-      slope:    values['slope'],
-      ca:       values['ca'],
-      thal:     values['thal'],
+      age: values.age, sex: values.sex, cp: values.cp,
+      trestbps: values.trestbps, chol: values.chol, fbs: values.fbs,
+      restecg: values.restecg, thalach: values.thalach, exang: values.exang,
+      oldpeak: values.oldpeak, slope: values.slope, ca: values.ca, thal: values.thal,
     };
 
     try {
@@ -239,41 +209,34 @@ export const Predict: React.FC<PredictProps> = ({ onPredict }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
-
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
-
+      if (!res.ok) throw new Error(`Server error ${res.status}`);
       const data = await res.json();
 
-      // Map backend cluster id → label
       const clusterLabels: Record<number, string> = {
         0: 'Cluster 0 — Healthy / Low Risk Group',
         1: 'Cluster 1 — Moderate Risk Group',
         2: 'Cluster 2 — Severe Risk Group',
       };
-
       const riskLevel: 'Low' | 'Medium' | 'High' = data.risk_level;
-
-      const cpLabel = FIELDS.find(f => f.key === 'cp')?.options
-        .find(o => o.value === values['cp'])?.label?.split(' — ')[0] ?? 'Unknown';
-
-      const sexLabel = values['sex'] === 0 ? 'Female' : 'Male';
+      const cpLabel = FIELDS.find(f => f.key === 'cp')?.options.find(o => o.value === values.cp)?.label?.split(' — ')[0] ?? 'Unknown';
+      const sexLabel = values.sex === 0 ? 'Female' : 'Male';
 
       const newPrediction: Patient = {
         id: 'p_' + Date.now(),
-        age: values['age'],
+        age: values.age,
         sex: sexLabel as 'Male' | 'Female',
         chestPainType: cpLabel as any,
-        restingBp: values['trestbps'],
-        cholesterol: values['chol'],
-        fastingBs: values['fbs'] === 1,
-        maxHeartRate: values['thalach'],
-        exerciseAngina: values['exang'] === 1,
+        restingBp: values.trestbps,
+        cholesterol: values.chol,
+        fastingBs: values.fbs === 1,
+        maxHeartRate: values.thalach,
+        exerciseAngina: values.exang === 1,
         riskLevel,
         cluster: clusterLabels[data.cluster] ?? `Cluster ${data.cluster}`,
         confidence: {
-          knn:               Math.round((data.knn?.confidence ?? 0) * 100),
+          knn:                Math.round((data.knn?.confidence ?? 0) * 100),
           logisticRegression: Math.round((data.logistic_regression?.confidence ?? 0) * 100),
-          decisionTree:      Math.round((data.decision_tree?.confidence ?? 0) * 100),
+          decisionTree:       Math.round((data.decision_tree?.confidence ?? 0) * 100),
         },
       };
 
@@ -286,85 +249,86 @@ export const Predict: React.FC<PredictProps> = ({ onPredict }) => {
     }
   };
 
-  // ── Helpers ──────────────────────────────────────────────────────────────────
+  // ── Derived ───────────────────────────────────────────────────────────────
 
   const confidenceData = result
     ? [
-        { name: 'KNN',                 score: result.confidence.knn },
-        { name: 'Logistic Regression', score: result.confidence.logisticRegression },
-        { name: 'Decision Tree',       score: result.confidence.decisionTree },
+        { name: 'KNN',        score: result.confidence.knn },
+        { name: 'Logistic R', score: result.confidence.logisticRegression },
+        { name: 'Dec. Tree',  score: result.confidence.decisionTree },
       ]
     : [];
 
-  const getRiskColor = (level: string) => {
+  const barColors = ['#91c5ff', '#3a81f6', '#2563ef'];
+
+  const getRiskStyle = (level: string) => {
     switch (level) {
-      case 'High':   return 'text-[#e7000b] bg-[#e7000b]/10 border-[#e7000b] glow-red';
-      case 'Medium': return 'text-yellow-500 bg-yellow-500/10 border-yellow-500 glow-yellow';
-      default:       return 'text-green-500 bg-green-500/10 border-green-500 glow-green';
+      case 'High':   return { pill: 'text-[#e7000b] bg-[#e7000b]/10 border-[#e7000b]/30', card: 'glow-red' };
+      case 'Medium': return { pill: 'text-yellow-400 bg-yellow-400/10 border-yellow-400/30', card: 'glow-yellow' };
+      default:       return { pill: 'text-green-400 bg-green-400/10 border-green-400/30', card: 'glow-green' };
     }
   };
 
-  const inputCls =
-    'w-full bg-[#262626] border border-[#262626] text-white px-4 py-2.5 rounded-lg focus:outline-none focus:border-[#3a81f6] text-sm';
+  const inputCls = 'input-field cursor-pointer';
 
-  // ── Render ───────────────────────────────────────────────────────────────────
+  // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start py-8">
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 py-6">
 
-      {/* ── Form Card ──────────────────────────────────────────────────────── */}
-      <div className="lg:col-span-7 bg-[#0a0a0a] border border-[#262626] rounded-lg p-6 glow-blue">
-        <div className="flex items-center space-x-3 mb-6">
-          <Activity className="h-6 w-6 text-[#3a81f6]" />
-          <h2 className="text-xl font-bold">Predict Diagnostics</h2>
+      {/* ── Form Card ───────────────────────────────────────────────────── */}
+      <div className="lg:col-span-7 bg-[#0f0f0f] border border-[#1e1e1e] rounded-xl p-5 sm:p-6">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="h-8 w-8 rounded-lg bg-[#3a81f6]/10 border border-[#3a81f6]/20 flex items-center justify-center flex-shrink-0">
+            <Activity className="h-4 w-4 text-[#3a81f6]" strokeWidth={2} />
+          </div>
+          <div>
+            <h2 className="text-base font-bold text-white tracking-tight">Predict Diagnostics</h2>
+            <p className="text-xs text-[#525252]">Select patient values — first option is healthy, last is high-risk</p>
+          </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-4">
             {FIELDS.map((field) => {
               const isCustom = !!customFlags[field.key];
-              const currentVal = values[field.key];
-
-              // Determine which dropdown value to show
-              const dropdownValue = isCustom
-                ? '__custom__'
-                : String(currentVal);
+              const dropdownValue = isCustom ? '__custom__' : String(values[field.key]);
 
               return (
                 <div key={field.key}>
-                  <label className="block text-xs font-semibold uppercase tracking-wider text-[#a1a1a1] mb-1">
+                  <label className="field-label" htmlFor={`field-${field.key}`}>
                     {field.label}
                     {field.subtitle && (
-                      <span className="ml-1 normal-case font-normal text-[#666]">
-                        ({field.subtitle})
-                      </span>
+                      <span className="ml-1 normal-case font-normal text-[#3a3a3a]">({field.subtitle})</span>
                     )}
                   </label>
-
-                  <select
-                    value={dropdownValue}
-                    onChange={(e) => handleDropdownChange(field.key, e.target.value)}
-                    className={inputCls}
-                  >
-                    {field.options.map((opt, idx) => (
-                      <option key={opt.value} value={String(opt.value)}>
-                        {idx === 0 ? '✓ ' : idx === field.options.length - 1 ? '✗ ' : '  '}
-                        {opt.label}
-                      </option>
-                    ))}
-                    <option value="__custom__">Custom value…</option>
-                  </select>
-
+                  <div className="relative">
+                    <select
+                      id={`field-${field.key}`}
+                      value={dropdownValue}
+                      onChange={(e) => handleDropdownChange(field.key, e.target.value)}
+                      className={`${inputCls} pr-8`}
+                    >
+                      {field.options.map((opt, idx) => (
+                        <option key={opt.value} value={String(opt.value)}>
+                          {idx === 0 ? '✓ ' : idx === field.options.length - 1 ? '✗ ' : '  '}
+                          {opt.label}
+                        </option>
+                      ))}
+                      <option value="__custom__">Custom value…</option>
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#525252]" />
+                  </div>
                   {isCustom && (
                     <input
                       type="number"
-                      placeholder={`Enter value (${field.min ?? 0}–${field.max ?? 999})`}
+                      placeholder={`Enter value${field.min !== undefined ? ` (${field.min}–${field.max})` : ''}`}
                       value={customInputs[field.key] ?? ''}
                       onChange={(e) => handleCustomInput(field.key, e.target.value)}
-                      className={`${inputCls} mt-2`}
+                      className="input-field mt-2"
                       min={field.min}
                       max={field.max}
-                      step="any"
+                      step={field.step ?? 1}
                       required
                     />
                   )}
@@ -374,15 +338,16 @@ export const Predict: React.FC<PredictProps> = ({ onPredict }) => {
           </div>
 
           {error && (
-            <p className="text-sm text-[#e7000b] bg-[#e7000b]/10 border border-[#e7000b]/30 rounded-lg px-4 py-2">
-              {error}
-            </p>
+            <div className="flex items-start gap-2.5 bg-[#e7000b]/8 border border-[#e7000b]/20 rounded-lg px-4 py-3">
+              <ShieldAlert className="h-4 w-4 text-[#e7000b] flex-shrink-0 mt-0.5" strokeWidth={2} />
+              <p className="text-sm text-[#e7000b]">{error}</p>
+            </div>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 bg-[#3a81f6] hover:bg-[#2563ef] text-white font-semibold rounded-lg transition-all duration-300 hover:shadow-[0_0_20px_rgba(58,129,246,0.5)] transform hover:scale-[1.01] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full py-3 bg-[#3a81f6] hover:bg-[#2563ef] text-white font-semibold text-sm rounded-lg transition-all duration-200 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
           >
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
             {loading ? 'Analyzing…' : 'Analyze Patient'}
@@ -390,79 +355,112 @@ export const Predict: React.FC<PredictProps> = ({ onPredict }) => {
         </form>
       </div>
 
-      {/* ── Result Card ────────────────────────────────────────────────────── */}
-      <div className="lg:col-span-5 min-h-[400px]">
+      {/* ── Result Card ─────────────────────────────────────────────────── */}
+      <div className="lg:col-span-5">
         <AnimatePresence mode="wait">
-          {result ? (
-            <motion.div
-              key="result-active"
-              initial={{ opacity: 0, scale: 0.95, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -15 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-              className="bg-[#0a0a0a] border border-[#262626] rounded-lg p-6 flex flex-col justify-between h-full glow-blue"
-            >
-              <div>
-                <div className="flex items-center space-x-3 mb-6">
-                  <CheckCircle2 className="h-6 w-6 text-[#3a81f6]" />
-                  <h2 className="text-xl font-bold">Diagnostic Results</h2>
+          {result ? (() => {
+            const rStyle = getRiskStyle(result.riskLevel);
+            return (
+              <motion.div
+                key="result-active"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ type: 'spring', stiffness: 280, damping: 26 }}
+                className={`bg-[#0f0f0f] border border-[#1e1e1e] rounded-xl p-5 sm:p-6 h-full ${rStyle.card}`}
+              >
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="h-8 w-8 rounded-lg bg-[#3a81f6]/10 border border-[#3a81f6]/20 flex items-center justify-center flex-shrink-0">
+                    <CheckCircle2 className="h-4 w-4 text-[#3a81f6]" strokeWidth={2} />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-bold text-white tracking-tight">Diagnostic Results</h2>
+                    <p className="text-xs text-[#525252]">ML ensemble output</p>
+                  </div>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-5">
+                  {/* Risk Level */}
                   <div>
-                    <span className="block text-xs font-semibold uppercase tracking-wider text-[#a1a1a1] mb-2">
-                      Patient Risk Classification
-                    </span>
-                    <span className={`inline-flex items-center px-4 py-1.5 rounded-full text-sm font-bold border ${getRiskColor(result.riskLevel)}`}>
+                    <span className="field-label">Risk Classification</span>
+                    <span className={`badge text-sm ${rStyle.pill}`}>
+                      <span className="h-1.5 w-1.5 rounded-full bg-current" />
                       {result.riskLevel} Risk
                     </span>
                   </div>
 
+                  {/* Cluster */}
                   <div>
-                    <span className="block text-xs font-semibold uppercase tracking-wider text-[#a1a1a1] mb-2">
-                      Unsupervised Cohort Assignment
-                    </span>
-                    <p className="text-white font-medium text-sm md:text-base border border-[#262626] rounded-lg px-4 py-2.5 bg-[#262626]/20">
-                      {result.cluster}
-                    </p>
+                    <span className="field-label">Cohort Assignment</span>
+                    <div className="bg-[#111111] border border-[#1e1e1e] rounded-lg px-4 py-2.5">
+                      <p className="text-white text-sm font-medium">{result.cluster}</p>
+                    </div>
                   </div>
 
+                  {/* Confidence chart */}
                   <div>
-                    <span className="block text-xs font-semibold uppercase tracking-wider text-[#a1a1a1] mb-4">
-                      Model Confidence Scores (%)
-                    </span>
-                    <div className="h-36 w-full">
+                    <span className="field-label mb-3 block">Model Confidence</span>
+                    <div className="h-40 w-full">
                       <ResponsiveContainer width="100%" height="100%">
                         <RechartsBarChart
                           layout="vertical"
                           data={confidenceData}
-                          margin={{ left: -10, right: 10, top: 0, bottom: 0 }}
+                          margin={{ left: 0, right: 16, top: 4, bottom: 4 }}
                         >
-                          <XAxis type="number" domain={[0, 100]} stroke="#a1a1a1" fontSize={10} />
-                          <YAxis dataKey="name" type="category" stroke="#a1a1a1" fontSize={10} width={110} />
-                          <Bar dataKey="score" radius={[0, 4, 4, 0]}>
-                            {confidenceData.map((_, index) => (
-                              <Cell
-                                key={`cell-${index}`}
-                                fill={index === 1 ? '#3a81f6' : index === 0 ? '#91c5ff' : '#2563ef'}
-                              />
+                          <XAxis
+                            type="number"
+                            domain={[0, 100]}
+                            tick={{ fill: '#525252', fontSize: 10, fontFamily: 'Geist Mono, monospace' }}
+                            tickLine={false}
+                            axisLine={false}
+                            tickFormatter={(v) => `${v}%`}
+                          />
+                          <YAxis
+                            dataKey="name"
+                            type="category"
+                            tick={{ fill: '#737373', fontSize: 11, fontFamily: 'Geist, sans-serif' }}
+                            tickLine={false}
+                            axisLine={false}
+                            width={70}
+                          />
+                          <Tooltip content={<ConfidenceTooltip />} cursor={{ fill: 'rgba(255,255,255,0.03)' }} />
+                          <Bar dataKey="score" radius={[0, 6, 6, 0]} maxBarSize={20}>
+                            {confidenceData.map((_, idx) => (
+                              <Cell key={`c-${idx}`} fill={barColors[idx]} />
                             ))}
                           </Bar>
                         </RechartsBarChart>
                       </ResponsiveContainer>
                     </div>
+                    {/* Legend */}
+                    <div className="flex flex-wrap gap-3 mt-2">
+                      {confidenceData.map((d, idx) => (
+                        <div key={idx} className="flex items-center gap-1.5">
+                          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: barColors[idx] }} />
+                          <span className="text-xs text-[#737373]">{d.name}</span>
+                          <span className="text-xs font-mono text-[#a1a1a1]">{d.score}%</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
+              </motion.div>
+            );
+          })() : (
+            <motion.div
+              key="result-empty"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="bg-[#0f0f0f] border border-[#1e1e1e] border-dashed rounded-xl p-6 flex flex-col items-center justify-center text-center min-h-[340px] lg:min-h-full"
+            >
+              <div className="h-12 w-12 rounded-full bg-[#1a1a1a] border border-[#222222] flex items-center justify-center mb-4">
+                <ShieldAlert className="h-5 w-5 text-[#525252]" strokeWidth={1.5} />
               </div>
-            </motion.div>
-          ) : (
-            <div className="bg-[#0a0a0a] border border-[#262626] rounded-lg p-6 border-dashed flex flex-col items-center justify-center text-center h-[535px]">
-              <ShieldAlert className="h-12 w-12 text-[#a1a1a1] mb-4" />
-              <h3 className="text-lg font-semibold text-white mb-2">No Diagnostic Run</h3>
-              <p className="text-sm text-[#a1a1a1] max-w-xs leading-relaxed">
-                Select patient clinical metrics on the left panel and click 'Analyze Patient' to observe classification metrics.
+              <h3 className="text-sm font-semibold text-white mb-1.5">No Analysis Run</h3>
+              <p className="text-xs text-[#525252] max-w-[220px] leading-relaxed">
+                Configure patient metrics and click Analyze Patient to see the ML prediction.
               </p>
-            </div>
+            </motion.div>
           )}
         </AnimatePresence>
       </div>
