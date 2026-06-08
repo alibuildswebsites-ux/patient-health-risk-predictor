@@ -14,11 +14,11 @@
   --border: #262626;
   --border-subtle: #1c1c1c;
   --radius: 0.75rem;
-  --chart-1: #91c5ff;
-  --chart-2: #3a81f6;
-  --chart-3: #2563ef;
-  --chart-4: #1a4eda;
-  --chart-5: #1f3fad;
+  --chart-1: #ffffff;
+  --chart-2: #a1a1a1;
+  --chart-3: #525252;
+  --chart-4: #3a3a3a;
+  --chart-5: #2a2a2a;
   --popover: #111111;
   --primary: #fafafa;
   --sidebar: #0a0a0a;
@@ -79,13 +79,13 @@ body {
 
 /* ── Glow Effects (refined — inner shadow not outer blast) ────────────────── */
 .glow-blue {
-  box-shadow: 0 0 0 1px rgba(58, 129, 246, 0.12),
-              0 4px 20px rgba(58, 129, 246, 0.08);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06),
+              0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .glow-blue-active {
-  box-shadow: 0 0 0 1px rgba(58, 129, 246, 0.3),
-              0 4px 24px rgba(58, 129, 246, 0.15);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15),
+              0 4px 24px rgba(255, 255, 255, 0.06);
 }
 
 .glow-red {
@@ -120,8 +120,8 @@ body {
 
 .input-field:focus {
   outline: none;
-  border-color: #3a81f6;
-  box-shadow: 0 0 0 3px rgba(58, 129, 246, 0.12);
+  border-color: #525252;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.04);
 }
 
 .input-field::placeholder { color: #525252; }
@@ -184,7 +184,7 @@ body {
 
 /* ── Animated gradient blob ───────────────────────────────────────────────── */
 .bg-blob {
-  background: radial-gradient(circle at 50% 40%, rgba(58, 129, 246, 0.1), transparent 65%);
+  background: radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.03), transparent 65%);
 }
 
 /* ── Reduced motion ───────────────────────────────────────────────────────── */

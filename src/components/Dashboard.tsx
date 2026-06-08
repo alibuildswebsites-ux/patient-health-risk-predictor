@@ -82,9 +82,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ patients }) => {
   });
 
   const clusterData = [
-    { name: 'Low Risk',      value: clusterCounts['Cluster 0'], color: '#91c5ff' },
-    { name: 'Moderate Risk', value: clusterCounts['Cluster 1'], color: '#3a81f6' },
-    { name: 'Severe Risk',   value: clusterCounts['Cluster 2'], color: '#1f3fad' },
+    { name: 'Low Risk',      value: clusterCounts['Cluster 0'], color: '#ffffff' },
+    { name: 'Moderate Risk', value: clusterCounts['Cluster 1'], color: '#737373' },
+    { name: 'Severe Risk',   value: clusterCounts['Cluster 2'], color: '#2a2a2a' },
   ];
 
   const scoreDistribution = [
@@ -96,10 +96,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ patients }) => {
   ];
 
   const summaryCards = [
-    { label: 'Total Patients',  value: totalPatients,          icon: Users,         color: 'text-[#3a81f6]', iconBg: 'bg-[#3a81f6]/10 border-[#3a81f6]/20' },
-    { label: 'High Risk',       value: highRiskCount,           icon: AlertTriangle, color: 'text-[#e7000b]', iconBg: 'bg-[#e7000b]/10 border-[#e7000b]/20' },
-    { label: 'Best Accuracy',   value: `${bestAccuracy}%`,      icon: TrendingUp,    color: 'text-[#91c5ff]', iconBg: 'bg-[#91c5ff]/10 border-[#91c5ff]/20' },
-    { label: 'Active Clusters', value: '3 Groups',              icon: Cpu,           color: 'text-[#2563ef]', iconBg: 'bg-[#2563ef]/10 border-[#2563ef]/20' },
+    { label: 'Total Patients',  value: totalPatients,      icon: Users,         color: 'text-white',      iconBg: 'bg-white/5 border-white/10' },
+    { label: 'High Risk',       value: highRiskCount,      icon: AlertTriangle, color: 'text-[#e7000b]',  iconBg: 'bg-[#e7000b]/10 border-[#e7000b]/20' },
+    { label: 'Best Accuracy',   value: `${bestAccuracy}%`, icon: TrendingUp,    color: 'text-white',      iconBg: 'bg-white/5 border-white/10' },
+    { label: 'Active Clusters', value: '3 Groups',         icon: Cpu,           color: 'text-[#a1a1a1]', iconBg: 'bg-white/5 border-white/10' },
   ];
 
   return (
@@ -154,9 +154,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ patients }) => {
                   wrapperStyle={{ fontSize: 11, paddingTop: 16 }}
                   formatter={(value) => <span style={{ color: '#737373' }}>{value}</span>}
                 />
-                <Bar dataKey="Accuracy"  fill="#91c5ff" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Precision" fill="#3a81f6" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Recall"    fill="#1f3fad" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Accuracy"  fill="#ffffff" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Precision" fill="#a1a1a1" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Recall"    fill="#525252" radius={[4, 4, 0, 0]} />
               </RechartsBarChart>
             </ResponsiveContainer>
           </div>
@@ -244,7 +244,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ patients }) => {
                   tickLine={false} axisLine={false} width={100}
                 />
                 <Tooltip content={<DarkTooltip />} cursor={{ fill: 'rgba(255,255,255,0.02)' }} />
-                <Bar dataKey="importance" fill="#3a81f6" radius={[0, 6, 6, 0]} maxBarSize={16} />
+                <Bar dataKey="importance" fill="#ffffff" radius={[0, 6, 6, 0]} maxBarSize={16} />
               </RechartsBarChart>
             </ResponsiveContainer>
           </div>
@@ -264,7 +264,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ patients }) => {
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={scoreDistribution} margin={{ left: -12, right: 8, top: 4, bottom: 0 }}>
                 <defs>
-                  {[['Low', '#91c5ff'], ['Medium', '#3a81f6'], ['High', '#1f3fad']].map(([key, color]) => (
+                  {[['Low', '#ffffff'], ['Medium', '#737373'], ['High', '#2a2a2a']].map(([key, color]) => (
                     <linearGradient key={key} id={`grad${key}`} x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%"  stopColor={color} stopOpacity={0.3} />
                       <stop offset="95%" stopColor={color} stopOpacity={0} />
@@ -279,9 +279,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ patients }) => {
                   wrapperStyle={{ fontSize: 11, paddingTop: 12 }}
                   formatter={(value) => <span style={{ color: '#737373' }}>{value}</span>}
                 />
-                <Area type="monotone" dataKey="Low"    stroke="#91c5ff" strokeWidth={2} fill="url(#gradLow)"    />
-                <Area type="monotone" dataKey="Medium" stroke="#3a81f6" strokeWidth={2} fill="url(#gradMedium)" />
-                <Area type="monotone" dataKey="High"   stroke="#1f3fad" strokeWidth={2} fill="url(#gradHigh)"   />
+                <Area type="monotone" dataKey="Low"    stroke="#ffffff" strokeWidth={2} fill="url(#gradLow)"    />
+                <Area type="monotone" dataKey="Medium" stroke="#737373" strokeWidth={2} fill="url(#gradMedium)" />
+                <Area type="monotone" dataKey="High"   stroke="#2a2a2a" strokeWidth={2} fill="url(#gradHigh)"   />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -296,7 +296,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ patients }) => {
           className="bg-[#0f0f0f] border border-[#1e1e1e] rounded-xl p-5 sm:p-6"
         >
           <div className="flex items-center gap-2 mb-5">
-            <Activity className="h-4 w-4 text-[#3a81f6]" strokeWidth={1.5} />
+            <Activity className="h-4 w-4 text-white" strokeWidth={1.5} />
             <h3 className="text-sm font-bold text-white tracking-tight">Recent Predictions</h3>
             <span className="ml-auto text-xs font-mono text-[#525252]">{patients.length} records</span>
           </div>

@@ -23,21 +23,21 @@ const stats = [
     value: null, // dynamic
     label: 'Patients Cohort',
     sub: 'UCI Heart Disease Dataset',
-    color: 'text-[#3a81f6]',
+    color: 'text-white',
   },
   {
     icon: BrainCircuit,
     value: '4 ML',
     label: 'Classifier Models',
     sub: 'KNN · LR · DT · Random Forest',
-    color: 'text-[#3a81f6]',
+    color: 'text-white',
   },
   {
     icon: BarChart3,
     value: '3',
     label: 'Risk Clusters',
     sub: 'K-Means Segmentation',
-    color: 'text-[#3a81f6]',
+    color: 'text-white',
   },
 ];
 
@@ -71,7 +71,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, patientsCount }) => {
           transition={{ duration: 0.4 }}
           className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#111111] border border-[#222222] text-xs font-medium text-[#737373] mb-6"
         >
-          <span className="h-1.5 w-1.5 rounded-full bg-[#3a81f6] animate-pulse" />
+          <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
           ML-Powered Cardiovascular Risk Assessment
         </motion.div>
 
@@ -83,11 +83,11 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, patientsCount }) => {
         >
           Patient Health{' '}
           <span className="relative">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#3a81f6] to-[#91c5ff]">
+            <span className="text-white">
               Risk Predictor
             </span>
             <motion.span
-              className="absolute -bottom-1 left-0 w-full h-[2px] bg-gradient-to-r from-[#3a81f6] to-[#91c5ff] rounded-full"
+              className="absolute -bottom-1 left-0 w-full h-[2px] bg-white rounded-full"
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ delay: 0.6, duration: 0.5, ease: 'easeOut' }}
@@ -112,7 +112,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, patientsCount }) => {
         >
           <button
             onClick={() => setActiveTab('predict')}
-            className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-[#3a81f6] hover:bg-[#2563ef] text-white font-semibold text-sm transition-all duration-200 active:scale-[0.98] cursor-pointer"
+            className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-white hover:bg-[#e5e5e5] text-black font-semibold text-sm transition-all duration-200 active:scale-[0.98] cursor-pointer"
           >
             Run Prediction
             <ArrowRight className="h-4 w-4" strokeWidth={2} />
@@ -142,7 +142,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, patientsCount }) => {
               variants={fadeUp}
               className="group relative overflow-hidden bg-[#0f0f0f] border border-[#1e1e1e] rounded-xl p-5 hover:border-[#2a2a2a] transition-colors duration-200 cursor-default"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#3a81f6]/4 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
+              <div className="absolute inset-0 bg-white/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
               <Icon className={`h-5 w-5 ${s.color} mb-3`} strokeWidth={1.5} />
               <div className="stat-number text-2xl font-bold text-white mb-0.5">{displayValue}</div>
               <div className="text-sm font-medium text-[#a1a1a1]">{s.label}</div>
@@ -168,7 +168,7 @@ export const Home: React.FC<HomeProps> = ({ setActiveTab, patientsCount }) => {
               className="bg-[#0f0f0f] border border-[#1e1e1e] rounded-xl p-5"
             >
               <div className="flex items-center gap-2 mb-2">
-                <Icon className="h-4 w-4 text-[#3a81f6]" strokeWidth={1.5} />
+                <Icon className="h-4 w-4 text-white" strokeWidth={1.5} />
                 <span className="text-sm font-semibold text-white">{f.title}</span>
               </div>
               <p className="text-xs text-[#737373] leading-relaxed">{f.desc}</p>

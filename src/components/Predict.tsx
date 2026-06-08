@@ -259,7 +259,7 @@ export const Predict: React.FC<PredictProps> = ({ onPredict }) => {
       ]
     : [];
 
-  const barColors = ['#91c5ff', '#3a81f6', '#2563ef'];
+  const barColors = ['#ffffff', '#a1a1a1', '#525252'];
 
   const getRiskStyle = (level: string) => {
     switch (level) {
@@ -279,8 +279,8 @@ export const Predict: React.FC<PredictProps> = ({ onPredict }) => {
       {/* ── Form Card ───────────────────────────────────────────────────── */}
       <div className="lg:col-span-7 bg-[#0f0f0f] border border-[#1e1e1e] rounded-xl p-5 sm:p-6">
         <div className="flex items-center gap-3 mb-5">
-          <div className="h-8 w-8 rounded-lg bg-[#3a81f6]/10 border border-[#3a81f6]/20 flex items-center justify-center flex-shrink-0">
-            <Activity className="h-4 w-4 text-[#3a81f6]" strokeWidth={2} />
+          <div className="h-8 w-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
+            <Activity className="h-4 w-4 text-white" strokeWidth={2} />
           </div>
           <div>
             <h2 className="text-base font-bold text-white tracking-tight">Predict Diagnostics</h2>
@@ -347,7 +347,7 @@ export const Predict: React.FC<PredictProps> = ({ onPredict }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 bg-[#3a81f6] hover:bg-[#2563ef] text-white font-semibold text-sm rounded-lg transition-all duration-200 active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full py-3 bg-white hover:bg-[#e5e5e5] text-black font-semibold text-sm rounded-lg transition-all duration-200 active:scale-[0.99] disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
           >
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
             {loading ? 'Analyzing…' : 'Analyze Patient'}
@@ -370,8 +370,8 @@ export const Predict: React.FC<PredictProps> = ({ onPredict }) => {
                 className={`bg-[#0f0f0f] border border-[#1e1e1e] rounded-xl p-5 sm:p-6 h-full ${rStyle.card}`}
               >
                 <div className="flex items-center gap-3 mb-5">
-                  <div className="h-8 w-8 rounded-lg bg-[#3a81f6]/10 border border-[#3a81f6]/20 flex items-center justify-center flex-shrink-0">
-                    <CheckCircle2 className="h-4 w-4 text-[#3a81f6]" strokeWidth={2} />
+                  <div className="h-8 w-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
+                    <CheckCircle2 className="h-4 w-4 text-white" strokeWidth={2} />
                   </div>
                   <div>
                     <h2 className="text-base font-bold text-white tracking-tight">Diagnostic Results</h2>

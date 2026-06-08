@@ -31,8 +31,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
           className="flex items-center gap-2.5 cursor-pointer focus:outline-none"
         >
           <div className="relative flex-shrink-0">
-            <Activity className="h-5 w-5 text-[#3a81f6]" strokeWidth={2} />
-            <span className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-[#3a81f6] animate-pulse" />
+            <Activity className="h-5 w-5 text-white" strokeWidth={2} />
+            <span className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
           </div>
           <span className="font-bold text-base tracking-tight text-white">HealthAI</span>
         </button>
