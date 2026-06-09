@@ -204,7 +204,7 @@ export const Predict: React.FC<PredictProps> = ({ onPredict }) => {
     };
 
     try {
-      const res = await fetch('http://147.182.199.128:8000/predict', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL ?? 'http://147.182.199.128:8000'}/predict`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
