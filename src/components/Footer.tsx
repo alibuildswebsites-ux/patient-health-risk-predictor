@@ -1,31 +1,10 @@
-import { Github, Globe, Activity, ArrowUpRight } from 'lucide-react';
-
-interface FooterLinkProps {
-  href: string;
-  icon: React.ReactNode;
-  label: string;
-}
-
-const FooterLink = ({ href, icon, label }: FooterLinkProps) => (
-  <a
-    href={href}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="group flex items-center gap-2 text-sm text-[#737373] hover:text-white transition-colors duration-200 cursor-pointer"
-  >
-    <span className="h-4 w-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
-      {icon}
-    </span>
-    <span>{label}</span>
-    <ArrowUpRight className="h-3 w-3 opacity-0 -translate-y-1 translate-x-1 group-hover:opacity-60 group-hover:translate-y-0 group-hover:translate-x-0 transition-all duration-200" />
-  </a>
-);
+import { Github, Activity, ArrowUpRight } from 'lucide-react';
 
 export const Footer = () => {
   return (
     <footer className="relative z-10 mt-auto border-t border-[#1e1e1e] bg-[#0a0a0a]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+        <div className="flex flex-col items-center gap-4">
 
           {/* Brand */}
           <div className="flex items-center gap-2.5">
@@ -35,18 +14,27 @@ export const Footer = () => {
             <span className="text-sm font-semibold tracking-tight text-white">HealthAI</span>
           </div>
 
-          {/* Links */}
-          <nav className="flex items-center gap-5 sm:gap-6" aria-label="Footer links">
-            <FooterLink
-              href="https://github.com/alibuildswebsites-ux/patient-health-risk-predictor"
-              icon={<Github className="h-full w-full" strokeWidth={1.5} />}
-              label="GitHub"
-            />
-            <FooterLink
+          {/* Links — stacked vertically */}
+          <nav className="flex flex-col items-center gap-3" aria-label="Footer links">
+            <a
               href="https://alibuildswebsites.me"
-              icon={<Globe className="h-full w-full" strokeWidth={1.5} />}
-              label="alibuildswebsites.me"
-            />
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-2 text-sm text-[#737373] hover:text-white transition-colors duration-200 cursor-pointer"
+            >
+              <span className="text-sm transition-colors duration-200 group-hover:text-white">Built by alibuildswebsites</span>
+              <ArrowUpRight className="h-3 w-3 text-[#525252] group-hover:text-white transition-all duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </a>
+            <a
+              href="https://github.com/alibuildswebsites-ux/patient-health-risk-predictor"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group inline-flex items-center gap-2 text-sm text-[#737373] hover:text-white transition-colors duration-200 cursor-pointer"
+            >
+              <Github className="h-4 w-4 transition-transform duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" strokeWidth={1.5} />
+              <span>GitHub</span>
+              <ArrowUpRight className="h-3 w-3 text-[#525252] group-hover:text-white transition-all duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 opacity-0 group-hover:opacity-100" />
+            </a>
           </nav>
 
           {/* Copyright */}

@@ -30,44 +30,51 @@ You enter a patient's clinical measurements (age, blood pressure, cholesterol, e
 
 ```
 ai_p/
-├── main.py                  # FastAPI backend — prediction API
-├── preprocessing.py         # Data cleaning and feature engineering
-├── supervised.py            # Trains the 4 classifiers, saves .pkl files
-├── unsupervised.py          # Trains K-Means, generates cluster profiles
-├── heart.csv                # Raw dataset
-├── requirements.txt         # Python dependencies
-├── models/
-│   ├── scaler.pkl           # StandardScaler fitted on training data
-│   ├── knn.pkl              # K-Nearest Neighbors classifier
-│   ├── logistic_regression.pkl
-│   ├── decision_tree.pkl
-│   ├── random_forest.pkl
-│   ├── kmeans.pkl           # K-Means clustering model
-│   ├── model_stats.json     # Accuracy, precision, recall, F1 per model
-│   └── feature_importance.json
-├── data/
-│   ├── heart_cleaned.csv    # Preprocessed dataset
-│   ├── pca_data.csv         # PCA-reduced data for cluster visualization
-│   └── cluster_profiles.json
+├── backend/
+│   ├── main.py                  # FastAPI backend — prediction API
+│   ├── preprocessing.py         # Data cleaning and feature engineering
+│   ├── supervised.py            # Trains the 4 classifiers, saves .pkl files
+│   ├── unsupervised.py          # Trains K-Means, generates cluster profiles
+│   ├── heart.csv                # Raw dataset
+│   ├── requirements.txt         # Python dependencies
+│   ├── models/
+│   │   ├── scaler.pkl           # StandardScaler fitted on training data
+│   │   ├── knn.pkl              # K-Nearest Neighbors classifier
+│   │   ├── logistic_regression.pkl
+│   │   ├── decision_tree.pkl
+│   │   ├── random_forest.pkl
+│   │   ├── kmeans.pkl           # K-Means clustering model
+│   │   ├── model_stats.json     # Accuracy, precision, recall, F1 per model
+│   │   └── feature_importance.json
+│   ├── data/
+│   │   ├── heart_cleaned.csv    # Preprocessed dataset
+│   │   ├── pca_data.csv         # PCA-reduced data for cluster visualization
+│   │   └── cluster_profiles.json
+│   └── plots/                   # Training visualizations (confusion matrices, etc.)
 ├── src/
-│   ├── App.tsx              # Root component, tab routing, global state
+│   ├── App.tsx                  # Root component, tab routing, global state
+│   ├── main.tsx                 # Entry point
+│   ├── index.css                # Design tokens, custom utilities, Recharts overrides
 │   ├── components/
-│   │   ├── Navbar.tsx       # Tab navigation (Home / Predict / Dashboard)
-│   │   ├── Home.tsx         # Landing page with project overview
-│   │   ├── Predict.tsx      # Patient input form + live prediction results
-│   │   └── Dashboard.tsx    # Analytics, model stats, cluster explorer
+│   │   ├── Navbar.tsx           # Tab navigation (Home / Predict / Dashboard / About)
+│   │   ├── Home.tsx             # Landing page with project overview
+│   │   ├── Predict.tsx          # Patient input form + live prediction results
+│   │   ├── Dashboard.tsx        # Analytics, model stats, cluster explorer
+│   │   ├── About.tsx            # Project details: data, pipeline, models, clusters
+│   │   └── Footer.tsx           # Site footer with links
 │   └── data/
-│       └── mockData.ts      # Patient type definition + seed data
-├── vite.config.ts           # Vite dev server config (host: 0.0.0.0, port: 5001)
+│       └── mockData.ts          # Patient type definition + seed data
+├── vercel.json                  # Vercel deployment config (frontend only)
+├── vite.config.ts               # Vite dev server config
+├── .env.local                   # Local dev environment variables
 ├── package.json
-└── tailwind.config.js
+├── tailwind.config.js
+└── tsconfig.json
 ```
 
 ---
 
 ## Prerequisites
-
-Make sure you have the following installed:
 
 - **Python 3.10+** — [python.org](https://www.python.org/)
 - **Node.js 18+** and **npm** — [nodejs.org](https://nodejs.org/)
@@ -92,49 +99,41 @@ cd patient-health-risk-predictor
 
 ```bash
 python3 -m venv .venv
-```
-
-**On Linux/macOS:**
-```bash
-source .venv/bin/activate
-```
-
-**On Windows:**
-```bash
-.venv\Scripts\activate
+source .venv/bin/activate   # Linux/macOS
+# or .venv\Scripts\activate  # Windows
 ```
 
 #### Install Python dependencies
 
 ```bash
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 ```
 
 ---
 
 ### 3. Train the Models (only needed once)
 
-The `models/` directory contains pre-trained `.pkl` files so you can skip this step if they're already present. If you want to retrain from scratch:
+The `backend/models/` directory contains pre-trained `.pkl` files so you can skip this step if they're already present. To retrain from scratch:
 
 ```bash
 # Step 1: Clean and preprocess the raw data
-python preprocessing.py
+python backend/preprocessing.py
 
 # Step 2: Train and save the 4 supervised classifiers
-python supervised.py
+python backend/supervised.py
 
 # Step 3: Train K-Means and generate cluster profiles
-python unsupervised.py
+python backend/unsupervised.py
 ```
 
-This will regenerate all files inside `models/` and `data/`.
+This regenerates all files inside `backend/models/`, `backend/data/`, and `backend/plots/`.
 
 ---
 
 ### 4. Start the Backend (FastAPI)
 
 ```bash
-uvicorn main:app --host 0.0.0.0 --port 8000
+uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 The API will be available at:
@@ -160,42 +159,8 @@ npm run dev
 ```
 
 The app will be available at:
-- Local: `http://localhost:5001`
-- Network (from other devices): `http://<your-ip>:5001`
-
----
-
-## Accessing from Another Device / Network
-
-Both servers bind to `0.0.0.0` so they are reachable from any device on the same network (or internet if the server is public).
-
-If you are hosting on a cloud server (DigitalOcean, AWS, GCP, etc.) make sure **ports 5001 and 8000 are open** in your firewall / security group rules.
-
-| Service | Port | URL |
-|---|---|---|
-| Frontend | 5001 | `http://<server-ip>:5001` |
-| Backend API | 8000 | `http://<server-ip>:8000` |
-| API Docs | 8000 | `http://<server-ip>:8000/docs` |
-
----
-
-## Running in Production (Optional)
-
-For a stable production setup, build the frontend and serve it statically:
-
-```bash
-# Build the React app
-npm run build
-
-# Serve the dist/ folder (example using serve)
-npx serve dist -l 5001
-```
-
-Run the backend with more workers:
-
-```bash
-uvicorn main:app --host 0.0.0.0 --port 8000 --workers 2
-```
+- Local: `http://localhost:5173`
+- Network: `http://<your-ip>:5173`
 
 ---
 
@@ -275,6 +240,29 @@ Returns mean feature values per cluster group.
 | Decision Tree | 70.00% | 69.23% | 64.29% | 66.67% |
 
 Risk level is determined by ensemble voting across all four models, with Random Forest confidence used as a tiebreaker.
+
+---
+
+## Deployment
+
+### Production Backend
+
+Run with multiple workers on the server:
+
+```bash
+uvicorn backend.main:app --host 0.0.0.0 --port 8000 --workers 2
+```
+
+### Production Frontend
+
+Deploy to Vercel (recommended) or build and serve statically:
+
+```bash
+npm run build      # outputs to dist/
+npx serve dist -l 5001
+```
+
+Set the `VITE_API_URL` environment variable to point to your backend server (e.g., `http://<server-ip>:8000`).
 
 ---
 
