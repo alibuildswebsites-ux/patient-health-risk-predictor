@@ -5,6 +5,7 @@ import Home from './components/Home';
 import Predict from './components/Predict';
 import Dashboard from './components/Dashboard';
 import About from './components/About';
+import Footer from './components/Footer';
 import { initialPatients, Patient } from './data/mockData';
 
 export default function App() {
@@ -64,6 +65,8 @@ export default function App() {
           )}
         </AnimatePresence>
       </main>
+
+      <Footer />
     </div>
   );
 }
