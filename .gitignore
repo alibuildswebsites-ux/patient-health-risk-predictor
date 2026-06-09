@@ -1,7 +1,9 @@
 node_modules
 dist
 .venv
+backend/.venv
 __pycache__
+backend/__pycache__
 *.pyc
 *.pyo
 .env.local
@@ -9,4 +11,6 @@ __pycache__
 .eslintcache
 .DS_Store
 heart.csv
+backend/heart.csv
 *.local
+.vercel
