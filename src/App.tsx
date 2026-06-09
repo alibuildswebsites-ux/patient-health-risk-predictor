@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Home from './components/Home';
 import Predict from './components/Predict';
 import Dashboard from './components/Dashboard';
+import About from './components/About';
 import { initialPatients, Patient } from './data/mockData';
 
 export default function App() {
@@ -53,6 +54,12 @@ export default function App() {
           {activeTab === 'dashboard' && (
             <motion.div key="dashboard" {...pageTransition}>
               <Dashboard patients={patients} />
+            </motion.div>
+          )}
+
+          {activeTab === 'about' && (
+            <motion.div key="about" {...pageTransition}>
+              <About />
             </motion.div>
           )}
         </AnimatePresence>

@@ -11,6 +11,7 @@ const tabs = [
   { id: 'home',      label: 'Home' },
   { id: 'predict',   label: 'Predict' },
   { id: 'dashboard', label: 'Dashboard' },
+  { id: 'about',     label: 'About' },
 ];
 
 export const Navbar: React.FC<NavbarProps> = ({ activeTab, setActiveTab }) => {
